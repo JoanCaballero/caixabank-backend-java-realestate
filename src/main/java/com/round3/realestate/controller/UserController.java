@@ -3,6 +3,7 @@ package com.round3.realestate.controller;
 import com.round3.realestate.payload.DashboardResponse;
 import com.round3.realestate.security.CustomUserDetails;
 import com.round3.realestate.service.DashboardService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -18,14 +19,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
+@RequiredArgsConstructor
 public class UserController {
 
-    private DashboardService dashboardService;
-
     @Autowired
-    public UserController(DashboardService dashboardService) {
-        this.dashboardService = dashboardService;
-    }
+    private DashboardService dashboardService;
 
     @GetMapping("/me")
     public ResponseEntity<Object> getCurrentUser() {

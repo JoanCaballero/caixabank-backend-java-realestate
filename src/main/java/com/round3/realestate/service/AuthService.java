@@ -8,26 +8,24 @@ import com.round3.realestate.payload.AuthResponse;
 import com.round3.realestate.repository.AuthRepository;
 import com.round3.realestate.repository.UserRepository;
 import com.round3.realestate.security.JwtProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+
 
 @Service
+@RequiredArgsConstructor
 public class AuthService implements AuthRepository {
 
-    private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
-    private final JwtProvider jwtProvider;
-
     @Autowired
-    public AuthService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtProvider = jwtProvider;
-    }
+    private final UserRepository userRepository;
+    @Autowired
+    private final BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private final JwtProvider jwtProvider;
 
     @Override
     public AuthResponse register(RegisterRequest request) {
@@ -51,16 +49,18 @@ public class AuthService implements AuthRepository {
     }
 
     @Override
-    public AuthResponse login(LoginRequest request) {
-        Optional<User> userOpt = userRepository.findUserByUsernameOrEmail(request.getUsernameOrEmail(), request.getUsernameOrEmail());
+    public AuthResponse login(LoginRequest request) throws BadCredentialsException {
 
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-                String token = jwtProvider.generateToken(user.getUsername());
-                return new AuthResponse(true, token);
-            }
+        User user = userRepository.findUserByUsernameOrEmail(request.getUsernameOrEmail(), request.getUsernameOrEmail())
+                .orElseThrow(() -> new BadCredentialsException("Unauthorised: Bad credentials"));
+
+        boolean passwordMatches = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        if (!passwordMatches) {
+            throw new BadCredentialsException("Unauthorised: Bad credentials");
         }
-        return new AuthResponse(false, "Unauthorised: Bad credentials");
+
+        String token = jwtProvider.generateToken(user.getUsername());
+
+        return new AuthResponse(true, token);
     }
 }

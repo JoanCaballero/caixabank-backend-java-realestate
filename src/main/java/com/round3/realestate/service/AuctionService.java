@@ -9,6 +9,7 @@ import com.round3.realestate.payload.BidRequest;
 import com.round3.realestate.repository.AuctionRepository;
 import com.round3.realestate.repository.PropertyRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,18 +19,15 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuctionService {
 
-    private AuctionRepository auctionRepository;
-    private PropertyRepository propertyRepository;
-    private RabbitTemplate rabbitTemplate;
-
     @Autowired
-    public AuctionService(AuctionRepository auctionRepository, PropertyRepository propertyRepository, RabbitTemplate rabbitTemplate){
-        this.auctionRepository = auctionRepository;
-        this.propertyRepository = propertyRepository;
-        this.rabbitTemplate = rabbitTemplate;
-    }
+    private final AuctionRepository auctionRepository;
+    @Autowired
+    private final PropertyRepository propertyRepository;
+    @Autowired
+    private final RabbitTemplate rabbitTemplate;
 
     public Auction createAuction(AuctionRequest auctionRequest){
         Property property = propertyRepository.findById(auctionRequest.getPropertyId())
@@ -48,21 +46,19 @@ public class AuctionService {
 
     @Transactional
     public String placeBid(Long auctionId, Long userId, BidRequest bidRequest){
-        Optional<Auction> optionalAuction = auctionRepository.findById(auctionId);
-        if(optionalAuction.isEmpty()){
-            return "Auction not found.";
-        }
-        Auction auction = optionalAuction.get();
-        if(auction.isClosed()){
+        var auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new RuntimeException("Auction not found with ID: " + auctionId));
+
+        if (auction.isClosed()) {
             return "Auction is already closed.";
         }
-        BigDecimal currentHighestBid = auction.getCurrentHighestBid();
-        BigDecimal minIncrement = auction.getMinBidIncrement();
 
-        if (bidRequest.getBidAmount().compareTo(currentHighestBid.add(minIncrement)) < 0) {
-            return "Bid is too low. Minimum bid: " + currentHighestBid.add(minIncrement);
+        var minValidBid = auction.getCurrentHighestBid().add(auction.getMinBidIncrement());
+        if (bidRequest.getBidAmount().compareTo(minValidBid) < 0) {
+            return "Bid is too low. Minimum required bid: " + minValidBid;
         }
-        BidMessage bidMessage = new BidMessage(auctionId, userId, bidRequest.getBidAmount(), LocalDateTime.now());
+
+        var bidMessage = new BidMessage(auctionId, userId, bidRequest.getBidAmount(), LocalDateTime.now());
         rabbitTemplate.convertAndSend("bid.exchange", "bid.routingkey", bidMessage);
 
         return "Bid placed successfully.";

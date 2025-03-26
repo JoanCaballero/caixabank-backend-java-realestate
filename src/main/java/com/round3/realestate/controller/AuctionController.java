@@ -9,6 +9,7 @@ import com.round3.realestate.messaging.BidMessage;
 import com.round3.realestate.payload.AuctionRequest;
 import com.round3.realestate.service.AuctionService;
 import com.round3.realestate.service.PropertyService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,17 +27,14 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auction")
+@RequiredArgsConstructor
 public class AuctionController {
-    private AuctionService auctionService;
-    private PropertyService propertyService;
-    private RabbitTemplate rabbitTemplate;
-
     @Autowired
-    public AuctionController(AuctionService auctionService, PropertyService propertyService, RabbitTemplate rabbitTemplate) {
-        this.auctionService = auctionService;
-        this.propertyService = propertyService;
-        this.rabbitTemplate = rabbitTemplate;
-    }
+    private AuctionService auctionService;
+    @Autowired
+    private PropertyService propertyService;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @PostMapping("/create")
     public Auction createAuction(@RequestBody AuctionRequest auctionRequest){

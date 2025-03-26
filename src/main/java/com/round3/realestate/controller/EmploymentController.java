@@ -4,6 +4,7 @@ import com.round3.realestate.entity.enumerations.ContractType;
 import com.round3.realestate.entity.Employment;
 import com.round3.realestate.payload.EmploymentRequest;
 import com.round3.realestate.service.EmploymentService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,14 +18,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/employment")
+@RequiredArgsConstructor
 public class EmploymentController {
 
-    private EmploymentService employmentService;
-
     @Autowired
-    public EmploymentController(EmploymentService employmentService) {
-        this.employmentService = employmentService;
-    }
+    private EmploymentService employmentService;
 
     @PostMapping
     public ResponseEntity<?> updateEmployment(@RequestBody EmploymentRequest request, Principal principal) {

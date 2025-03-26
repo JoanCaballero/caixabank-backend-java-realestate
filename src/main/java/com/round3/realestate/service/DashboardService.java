@@ -8,23 +8,22 @@ import com.round3.realestate.payload.MortgageResponse;
 import com.round3.realestate.repository.EmploymentRepository;
 import com.round3.realestate.repository.MortgageRepository;
 import com.round3.realestate.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class DashboardService {
 
-    private UserRepository userRepository;
-    private EmploymentRepository employmentRepository;
-    private MortgageRepository mortgageRepository;
-
     @Autowired
-    public DashboardService(UserRepository userRepository, EmploymentRepository employmentRepository, MortgageRepository mortgageRepository) {
-        this.userRepository = userRepository;
-        this.employmentRepository = employmentRepository;
-        this.mortgageRepository = mortgageRepository;
-    }
+    private final UserRepository userRepository;
+    @Autowired
+    private final EmploymentRepository employmentRepository;
+    @Autowired
+    private final MortgageRepository mortgageRepository;
+
 
     public DashboardResponse getUserDashboard(String username) {
         User user = userRepository.findUserByUsername(username)

@@ -7,6 +7,7 @@ import com.round3.realestate.repository.EmploymentRepository;
 import com.round3.realestate.repository.MortgageRepository;
 import com.round3.realestate.repository.PropertyRepository;
 import com.round3.realestate.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,20 +15,18 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Service
+@RequiredArgsConstructor
 public class MortgageService {
 
-    private UserRepository userRepository;
-    private PropertyRepository propertyRepository;
-    private EmploymentRepository employmentRepository;
-    private MortgageRepository mortgageRepository;
-
     @Autowired
-    public MortgageService(UserRepository userRepository, PropertyRepository propertyRepository, EmploymentRepository employmentRepository, MortgageRepository mortgageRepository) {
-        this.userRepository = userRepository;
-        this.propertyRepository = propertyRepository;
-        this.employmentRepository = employmentRepository;
-        this.mortgageRepository = mortgageRepository;
-    }
+    private final UserRepository userRepository;
+    @Autowired
+    private final PropertyRepository propertyRepository;
+    @Autowired
+    private final EmploymentRepository employmentRepository;
+    @Autowired
+    private final MortgageRepository mortgageRepository;
+
 
     private static final BigDecimal VAT_AND_FEES_PERCENTAGE = BigDecimal.valueOf(0.15);
     private static final BigDecimal INDEFINITE_THRESHOLD = BigDecimal.valueOf(0.30);

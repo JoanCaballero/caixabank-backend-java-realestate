@@ -5,6 +5,7 @@ import com.round3.realestate.entity.Property;
 import com.round3.realestate.repository.PropertyRepository;
 import com.round3.realestate.service.ScraperService;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,15 +19,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/scrape")
+@RequiredArgsConstructor
 public class ScraperController {
-    private ScraperService scraperService;
-    private PropertyRepository propertyRepository;
 
     @Autowired
-    public ScraperController(ScraperService scraperService, PropertyRepository propertyRepository) {
-        this.scraperService = scraperService;
-        this.propertyRepository = propertyRepository;
-    }
+    private ScraperService scraperService;
+    @Autowired
+    private PropertyRepository propertyRepository;
 
     @PostMapping
     public ResponseEntity<?> scrape(@RequestBody Map<String, Object> payload) {

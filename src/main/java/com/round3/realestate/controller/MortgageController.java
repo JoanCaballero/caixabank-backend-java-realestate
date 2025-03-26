@@ -3,6 +3,7 @@ package com.round3.realestate.controller;
 import com.round3.realestate.entity.Mortgage;
 import com.round3.realestate.payload.MortgageRequest;
 import com.round3.realestate.service.MortgageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +17,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/mortgage")
+@RequiredArgsConstructor
 public class MortgageController {
 
-    private MortgageService mortgageService;
-
     @Autowired
-    public MortgageController(MortgageService mortgageService) {
-        this.mortgageService = mortgageService;
-    }
+    private MortgageService mortgageService;
 
     @PostMapping
     public ResponseEntity<?> requestMortgage(@RequestBody MortgageRequest request, Principal principal) {

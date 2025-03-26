@@ -1,11 +1,16 @@
 package com.round3.realestate.security;
 
 import com.round3.realestate.entity.User;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
     private User user;
@@ -20,30 +25,6 @@ public class CustomUserDetails implements UserDetails {
         this.username = user.getUsername();
         this.email = user.getEmail();
         this.password = user.getPassword();
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user){
-        this.user = user;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     @Override

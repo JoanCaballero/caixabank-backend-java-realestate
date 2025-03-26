@@ -5,22 +5,20 @@ import com.round3.realestate.entity.Employment;
 import com.round3.realestate.entity.User;
 import com.round3.realestate.repository.EmploymentRepository;
 import com.round3.realestate.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Service
+@RequiredArgsConstructor
 public class EmploymentService {
 
-    private EmploymentRepository employmentRepository;
-    private UserRepository userRepository;
-
     @Autowired
-    public EmploymentService(EmploymentRepository employmentRepository, UserRepository userRepository) {
-        this.employmentRepository = employmentRepository;
-        this.userRepository = userRepository;
-    }
+    private final EmploymentRepository employmentRepository;
+    @Autowired
+    private final UserRepository userRepository;
 
     public Employment updateEmployment(String username, ContractType contractType, BigDecimal grossSalary) {
         User user = userRepository.findUserByUsername(username)
